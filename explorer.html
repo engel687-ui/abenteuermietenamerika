@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Routes Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, rgba(230, 203, 230, 1) 0%, rgba(188, 142, 188, 1) 100%);
+            width: 250px;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 0.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .sidebar-item svg {
+            margin-right: 1rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .routes-table {
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .routes-table th, .routes-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .routes-table th {
+            font-weight: 600;
+            color: #4b5563;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+        }
+        .routes-table td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .routes-table tr:last-child td {
+            border-bottom: none;
+        }
+        .routes-table tbody tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+        .routes-table tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+        .routes-table .sticky-col {
+            position: sticky;
+            left: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar text-gray-800">
+            <div>
+                <div class="flex items-center mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mr-2 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <span class="text-xl font-bold text-white">Explorer</span>
+                </div>
+                <div class="space-y-4">
+                    <div id="explore-btn" class="sidebar-item active">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="font-medium text-white">Explore</span>
+                    </div>
+                    <div id="details-btn" class="sidebar-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25H9.75m6-4.5H9.75m6-4.5H9.75M18 6.75a2.25 2.25 0 012.25 2.25v10.5A2.25 2.25 0 0118 21h-6.75a2.25 2.25 0 01-2.25-2.25V6.75a2.25 2.25 0 012.25-2.25H18z" />
+                        </svg>
+                        <span class="font-medium text-white">Details</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-xs text-center text-gray-50 mt-4">
+                © Adventure Explorer
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="flex-1 p-8 overflow-y-auto">
+            <div id="routes-section" class="content-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Routes from Las Vegas Hub</h1>
+                    <button id="add-record-btn" class="px-4 py-2 bg-pink-500 text-white rounded-md shadow-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition-colors">
+                        + Add record
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow overflow-hidden table-container">
+                    <table id="routes-table" class="routes-table">
+                        <thead>
+                            <tr>
+                                <th class="sticky-col border-r border-gray-200">Route Name</th>
+                                <th>Distance</th>
+                                <th>Estimated Duration</th>
+                                <th>Highlights</th>
+                                <th>Featured Attractions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="row-1" class="border-b border-gray-200">
+                                <td class="sticky-col border-r border-gray-200">Grand Canyon Loop</td>
+                                <td>280 mi</td>
+                                <td>5 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Red rock formations</li><li>Scenic vistas</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Grand Canyon National Park</li></ul></td>
+                            </tr>
+                            <tr id="row-2">
+                                <td class="sticky-col border-r border-gray-200">Valley of Fire State Park</td>
+                                <td>150 mi</td>
+                                <td>3 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Ancient petroglyphs</li><li>Sandstone formations</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Valley of Fire State Park</li><li>Atlatl Rock</li></ul></td>
+                            </tr>
+                            <tr id="row-3">
+                                <td class="sticky-col border-r border-gray-200">Red Rock Canyon Scenic Drive</td>
+                                <td>13 mi</td>
+                                <td>45 min</td>
+                                <td><ul class="list-disc list-inside"><li>Stunning rock formations</li><li>Desert landscape</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Red Rock Canyon Visitor Center</li></ul></td>
+                            </tr>
+                            <tr id="row-4">
+                                <td class="sticky-col border-r border-gray-200">Hoover Dam Day Trip</td>
+                                <td>70 mi</td>
+                                <td>2 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Iconic dam structure</li><li>Lake Mead views</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Hoover Dam</li><li>Lake Mead National Recreation Area</li></ul></td>
+                            </tr>
+                            <tr id="row-5">
+                                <td class="sticky-col border-r border-gray-200">Death Valley Scenic Route</td>
+                                <td>250 mi</td>
+                                <td>4 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Extreme desert landscapes</li><li>Badwater Basin</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Death Valley National Park</li><li>Badwater Basin</li></ul></td>
+                            </tr>
+                            <tr id="row-6">
+                                <td class="sticky-col border-r border-gray-200">Mount Charleston Scenic Drive</td>
+                                <td>100 mi</td>
+                                <td>2.5 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Pine forests</li><li>Mountain views</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Mount Charleston Wilderness Area</li></ul></td>
+                            </tr>
+                            <tr id="row-7">
+                                <td class="sticky-col border-r border-gray-200">Zion National Park Trip</td>
+                                <td>160 mi</td>
+                                <td>3 hr</td>
+                                <td><ul class="list-disc list-inside"><li>Massive sandstone cliffs</li><li>Emerald pools</li></ul></td>
+                                <td><ul class="list-disc list-inside"><li>Zion National Park</li></ul></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attractions Gallery Section -->
+            <div id="attractions-section" class="content-section hidden">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Attractions gallery</h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Placeholder attraction cards -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="https://placehold.co/400x300/e9d5ff/8a2be2?text=Monument+Valley" alt="Monument Valley" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Monument Valley</h3>
+                            <p class="text-gray-600 text-sm">A Navajo Nation tribal park on the Arizona-Utah border, known for its towering sandstone buttes.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="https://placehold.co/400x300/e9d5ff/8a2be2?text=Zion+National+Park" alt="Zion National Park" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Zion National Park</h3>
+                            <p class="text-gray-600 text-sm">A breathtaking park in Utah with massive sandstone cliffs, stunning canyons, and diverse plant and animal life.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="https://placehold.co/400x300/e9d5ff/8a2be2?text=Antelope+Canyon" alt="Antelope Canyon" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Antelope Canyon</h3>
+                            <p class="text-gray-600 text-sm">A beautiful slot canyon in Arizona, famous for its smooth, flowing rock formations and light beams.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="https://placehold.co/400x300/e9d5ff/8a2be2?text=Horseshoe+Bend" alt="Horseshoe Bend" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Horseshoe Bend</h3>
+                            <p class="text-gray-600 text-sm">A horseshoe-shaped meander of the Colorado River near Page, Arizona, known for its scenic views.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Record Modal -->
+    <div id="add-record-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center pb-3">
+                <h3 class="text-xl font-bold text-gray-800">Add New Record</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="add-record-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="routeName" class="block text-sm font-medium text-gray-700">Route Name</label>
+                        <input type="text" id="routeName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500" required>
+                    </div>
+                    <div>
+                        <label for="distance" class="block text-sm font-medium text-gray-700">Distance</label>
+                        <input type="text" id="distance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500" required>
+                    </div>
+                    <div>
+                        <label for="duration" class="block text-sm font-medium text-gray-700">Estimated Duration</label>
+                        <input type="text" id="duration" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500" required>
+                    </div>
+                    <div>
+                        <label for="highlights" class="block text-sm font-medium text-gray-700">Highlights (comma-separated)</label>
+                        <input type="text" id="highlights" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500" required>
+                    </div>
+                    <div>
+                        <label for="attractions" class="block text-sm font-medium text-gray-700">Featured Attractions (comma-separated)</label>
+                        <input type="text" id="attractions" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500" required>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" class="px-4 py-2 bg-pink-500 text-white rounded-md shadow-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition-colors">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const contentSections = document.querySelectorAll('.content-section');
+        const addRecordBtn = document.getElementById('add-record-btn');
+        const modal = document.getElementById('add-record-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const addRecordForm = document.getElementById('add-record-form');
+        const routesTableBody = document.querySelector('#routes-table tbody');
+
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                contentSections.forEach(section => section.classList.add('hidden'));
+
+                if (item.id === 'explore-btn') {
+                    document.getElementById('routes-section').classList.remove('hidden');
+                } else if (item.id === 'details-btn') {
+                    // You can add content for the Details page here
+                }
+            });
+        });
+
+        // Modal and Form functionality
+        addRecordBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        addRecordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const routeName = document.getElementById('routeName').value;
+            const distance = document.getElementById('distance').value;
+            const duration = document.getElementById('duration').value;
+            const highlights = document.getElementById('highlights').value.split(',').map(item => `<li>${item.trim()}</li>`).join('');
+            const attractions = document.getElementById('attractions').value.split(',').map(item => `<li>${item.trim()}</li>`).join('');
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="sticky-col border-r border-gray-200">${routeName}</td>
+                <td>${distance}</td>
+                <td>${duration}</td>
+                <td><ul class="list-disc list-inside">${highlights}</ul></td>
+                <td><ul class="list-disc list-inside">${attractions}</ul></td>
+            `;
+
+            routesTableBody.appendChild(newRow);
+            modal.style.display = 'none';
+            addRecordForm.reset();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abenteuer Mieten Amerika</title>
+    <style>
+        /* General Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 0;
+        }
+
+        nav {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            grid-column: 2;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 2.5rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2.5rem;
+        }
+
+        /* Updated navigation link styles with flexbox */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding: 0.5rem 0.2rem;
+            border-radius: 8px;
+        }
+
+        /* Softened navigation link hover gradient */
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, #81c784, #ffb74d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link.active {
+            border-bottom: 1px solid #ffffff;
+            padding-bottom: 0.2rem;
+        }
+
+        .phone-number {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-icon:hover {
+            color: #ffffff;
+        }
+
+        /* Mobile Menu */
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001; /* Above the header */
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+
+        .mobile-menu.open {
+            display: flex;
+            transform: translateX(0);
+        }
+
+        .mobile-menu-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        .mobile-menu-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 4.5rem;
+        }
+
+        /* Hero Section - Updated with softer gradient background */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, #81c784 0%, #ffb74d 100%);
+        }
+
+        .hero-left {
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .hero-right {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .hero-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        .hero-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Changed from 'cover' to 'contain' */
+            border: none;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+
+        .map-container {
+            position: absolute;
+            bottom: 0; /* Align to the very bottom */
+            left: 0; /* Span full width */
+            width: 100%; /* Span full width */
+            height: 180px; /* Increased height for more space */
+            background: #1a1a1a;
+            border-radius: 0 0 0 0; /* Remove bottom border-radius if it's full width at the bottom */
+            border-top: 1px solid #333; /* Add a top border if needed for separation */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem; /* Larger font size */
+            font-weight: 700; /* Bolder font */
+            z-index: 5;
+            background-image: url('compass.jpg');
+            background-size: cover;
+            background-position: center;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.9); /* Stronger text shadow */
+            overflow: hidden;
+            transition: all 0.3s ease; /* Add transition for hover effect */
+        }
+
+        .map-container:hover {
+            transform: translateY(-5px); /* Lift slightly on hover */
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+        }
+
+        /* Overlay for text readability */
+        .map-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Darker overlay for better contrast */
+            border-radius: 0; /* Match container border-radius */
+            z-index: 1;
+        }
+
+        .map-container a {
+            position: relative;
+            z-index: 2;
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column; /* Stack text and icon if desired */
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 1rem; /* Add internal padding */
+            gap: 0.5rem; /* Space between text and optional icon */
+        }
+
+        .map-container a div {
+            /* No background for text div, rely on overlay */
+            background-color: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            padding: 0; /* Remove internal padding if using container padding */
+        }
+
+        .map-container a div::after { /* Optional: Add a subtle arrow icon */
+            content: '➔'; /* Right arrow */
+            margin-left: 10px;
+            font-size: 1.2em;
+            display: inline-block;
+            transition: margin-left 0.3s ease;
+        }
+
+        .map-container a:hover div::after {
+            margin-left: 20px; /* Move arrow slightly on hover */
+        }
+
+
+        .hero-main-text {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            max-width: 500px;
+            line-height: 1.4;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #dddddd;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #eeeeee;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        /* Booking Form */
+        .booking-form {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+        }
+
+        .newsletter .booking-form {
+            max-width: 600px;
+            margin: 2rem auto 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        /* New styles for button container */
+        .form-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Updated CTA Button Styles */
+        .cta-button {
+            width: 100%;
+            background: linear-gradient(145deg, #a6ff00, #ffc800);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(145deg, #ffc800, #a6ff00);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+        }
+        
+        .whatsapp-button {
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .whatsapp-button:hover {
+            background: linear-gradient(145deg, #128C7E, #25D366);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sections */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: #050505;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            perspective: 1000px;
+        }
+
+        .feature-card {
+            background: none;
+            border: none;
+            padding: 0;
+            transition: none;
+            height: 450px;
+        }
+
+        /* New styles for the card front and back */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .feature-card:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            border: 1px solid #222;
+            background: #111111;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-front {
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            padding: 2rem;
+            justify-content: flex-start;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
+            border-radius: 16px;
+        }
+
+        /* The custom approach to fix the overlapping text */
+        .card-front .card-content {
+            position: absolute;
+            bottom: 1rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-front .card-content h3 {
+            position: static;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            line-height: 1.3;
+        }
+
+        .card-front .summary-text {
+            position: static;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .flip-text {
+            position: static;
+            font-size: 0.9rem;
+            color: #ddd;
+            text-decoration: underline;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .card-back-content {
+            text-align: left;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-back-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .card-back-content p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #aaa;
+            margin-bottom: 2rem;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        /* Updated: Position the button at the bottom of the card */
+        .card-back .cta-button {
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 6rem 0;
+            background: #050505;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .testimonial-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .testimonial-card p {
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .testimonial-card img {
+            width: 100%;
+            max-width: 200px;
+            margin: 1rem auto;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .testimonial-card cite {
+            color: #ffffff;
+            font-style: normal;
+            text-align: center;
+        }
+
+        /* Why Us Section */
+        .why-us {
+            padding: 6rem 0;
+            background: #111111;
+            text-align: center;
+        }
+
+        .why-us-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .why-us-content h2 {
+            margin-bottom: 1rem;
+        }
+
+        .why-us-content p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* New Styles for Karriere Section */
+        .karriere {
+            padding: 6rem 0;
+            background: #0a0a0a;
+            text-align: center;
+        }
+
+        .karriere .section-subtitle {
+            margin-bottom: 2rem;
+        }
+
+        .karriere .section-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .karriere .section-content p {
+            margin-bottom: 0;
+        }
+
+        .karriere .cta-button {
+            max-width: 400px;
+        }
+
+        /* Newsletter */
+        .newsletter {
+            padding: 4rem 0;
+            background: #111111;
+            text-align: center;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 400px;
+            margin: 2rem auto 0;
+            gap: 1rem;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+        }
+
+        .newsletter-button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Kontakt Section */
+        .kontakt {
+            padding: 6rem 0;
+            background: #050505;
+        }
+
+        .kontakt-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4rem;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 3rem;
+        }
+
+        .kontakt-form, .kontakt-info {
+            flex: 1 1 450px;
+            padding: 2.5rem;
+            background: #1a1a1a;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .kontakt-form h3, .kontakt-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, #ff6b6b, #48cae4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kontakt-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .kontakt-form input, .kontakt-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 0.75rem;
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kontakt-form input:focus, .kontakt-form textarea:focus {
+            outline: none;
+            border-color: #48cae2;
+            box-shadow: 0 0 0 3px rgba(72, 202, 228, 0.3);
+        }
+
+        .kontakt-form textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .kontakt-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .kontakt-info p i {
+            font-size: 1.5rem;
+            color: #e50914;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            padding: 3rem 0;
+            border-top: 1px solid #222;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #888;
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: #ffffff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .nav-left,
+            .nav-right {
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            nav {
+                grid-template-columns: auto 1fr auto; /* Changed grid to accommodate hamburger */
+                gap: 1rem;
+            }
+
+            .nav-left,
+            .nav-right {
+                display: none; /* Hide desktop nav */
+            }
+
+            .logo {
+                grid-column: 2; /* Keep logo in the center */
+                font-size: 1rem;
+            }
+
+            .hamburger {
+                display: block; /* Show hamburger menu on mobile */
+            }
+        }
+
+        @media (max-width: 800px) {
+            .phone-number {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 968px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-left {
+                padding: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-main-text {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.4rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 120px; /* Adjust height for smaller screens */
+                font-size: 1rem; /* Adjust font size */
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <div class="nav-left">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#fahrzeuge" class="nav-link">Fahrzeuge</a>
+                <a href="https://tourrouteplannerapp.pages.dev/" target="_blank" class="nav-link">
+                    🧭 Routenplaner
+                </a>
+            </div>
+            <div class="logo">Abenteuer Mieten Amerika</div>
+            <div class="nav-right">
+                <a href="#karriere" class="nav-link">Karriere</a>
+                <a href="#kontakt" class="nav-link">Kontakt</a>
+                <a href="#buchung" class="nav-link">Buchungsanfrage</a>
+                <div class="nav-icons">
+                    <a href="#" class="nav-icon">🛒</a>
+                    <a href="#" class="nav-icon">👤</a>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger-menu">☰</div>
+        </nav>
+    </header>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <ul class="mobile-menu-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#fahrzeuge">Fahrzeuge</a></li>
+            <li><a href="https://tourrouteplannerapp.pages.dev/" target="_blank">Routenplaner</a></li>
+            <li><a href="#karriere">Karriere</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
+            <li><a href="#buchung">Buchungsanfrage</a></li>
+        </ul>
+    </div>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-left">
+                <h1>Erlebt die USA mit E-Autos und mietet Natur pur!</h1>
+                <p>Mieten Sie noch heute ein Elektroauto für Ihr Abenteuer quer durch die USA. Mit einem Tesla-Elektroauto für Ihren Roadtrip zwischen Los Angeles und Las Vegas bietet Ihnen Abenteuer Mieten Amerika nachhaltige Mobilität, Camping-Ausrüstung und unvergessliche Erlebnisse. </p>
+                <form class="booking-form" action="process-form.php" method="POST">
+                    <div class="form-group">
+                        <label>Abholort</label>
+                        <input type="text" class="form-input" placeholder="Stadt oder Flughafen" name="Abholort">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Abholung</label>
+                            <input type="date" class="form-input" name="Abholung">
+                        </div>
+                        <div class="form-group">
+                            <label>Rückgabe</label>
+                            <input type="date" class="form-input" name="Rueckgabe">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fahrzeugtyp</label>
+                        <select class="form-input" name="Fahrzeugtyp">
+                            <option>Cyber Truck</option>
+                            <option>Tesla Model Y</option>
+                        </select>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="cta-button">Verfügbarkeit prüfen</button>
+                        <a href="https://wa.me/13239177708?text=Hallo,%20ich%20habe%20eine%20Frage%20zur%20Buchung%20auf%20Ihrer%20Webseite." class="whatsapp-button" target="_blank">
+                            Rufen oder Nachricht über WhatsApp senden
+                        </a>
+                    </div>
+                </form>
+            </div>
+            <div class="hero-right">
+                <div class="hero-video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="tesla.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="hero-overlay"></div>
+                <div class="map-container">
+                    <a href="explorer.html" class="block">
+                        <div>Link zu beliebten Routen vom Las Vegas Hub</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="fahrzeuge">
+            <div class="container">
+                <h2 class="section-title">Unsere Fahrzeuge</h2>
+                <p class="section-subtitle">Premium E-Fahrzeuge für jedes Abenteuer</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('https://placehold.co/400x300/1a1a1a/cccccc?text=Tesla+Model+Y');"></div>
+                                <div class="card-content">
+                                    <h3>Tesla Model Y</h3>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('teslamodely_flipcard1.jpg'); background-size: cover; background-position: center; border: none;">
+                                <div class="card-back-content">
+                                    <h3>Tesla Model Y</h3>
+                                    <p>Der Tesla Model Y ist das perfekte **Elektroauto** für Familien-Roadtrips und längere Abenteuer in den USA. Mit einer beeindruckenden Reichweite und viel Stauraum ist er ideal für **Roadtrip USA** und **Camping-Abenteuer**. Bietet Platz für 5 Personen und all Ihre Ausrüstung. Erlebe **nachhaltige Mobilität** ohne Kompromisse.</p>
+                                    <button class="cta-button">Jetzt buchen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('https://placehold.co/400x300/1a1a1a/cccccc?text=Tesla+Cybertruck');"></div>
+                                <div class="card-content">
+                                    <h3>Tesla Cybertruck</h3>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('cybertruck_flipcard2.jpg'); background-size: cover; background-position: center; border: none;">
+                                <div class="card-back-content">
+                                    <h3>Tesla Cybertruck</h3>
+                                    <p>Der Tesla Cybertruck ist das ultimative **Off-Road-Fahrzeug** für unvergessliche **Abenteuer in Amerika**. Seine robuste, kantige Bauweise und unübertroffene Leistung machen ihn bereit für jedes Terrain. Einzigartig und perfekt für **extreme Roadtrips** und **Off-Road-Camping**. Mieten Sie diesen futuristischen Truck und dominieren Sie die Natur **auf umweltfreundliche Weise**.</p>
+                                    <button class="cta-button">Jetzt buchen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="gallery" id="routen">
+            <div class="container">
+                <h2 class="section-title">Routen & Preise</h2>
+                <p class="section-subtitle">Premium E-Fahrzeuge für jedes Abenteuer</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('zion-campsite-tesla.jpg');"></div>
+                                <div class="card-content">
+                                    <h3>Conquering the Grand Circle</h3>
+                                    <p class="summary-text">Erleben Sie die atemberaubende Landschaft des amerikanischen Südwestens auf diesem 7-tägigen Roadtrip durch die Nationalparks von Utah und Arizona.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>Grand Circle Route</h3>
+                                    <p>Tag 1 - Las Vegas<br>Tag 2 - 3 Grand Canyon<br>Tag 4 - Zion Campingplatz<br>Tag 5-6 Escalante RV Park<br>Tag 7 - St. George / Las Vegas<br>Inklusive Campingausrüstung - Dachzelt, Schlafsäcke, tragbarer Herd, Kühlbox</p>
+                                    <button class="cta-button">Jetzt buchen ab $899</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('route66-tesla.jpg');"></div>
+                                <div class="card-content">
+                                    <h3>The Ultimate Route 66 Revival</h3>
+                                    <p class="summary-text">Folgen Sie der legendären Route 66 in 14 Tagen von Chicago bis Kalifornien und entdecken Sie historische Sehenswürdigkeiten und unvergessliche Landschaften.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>Die legendäre Route 66</h3>
+                                    <p>Tag 1 - Chicago Kickoff<br>Tag 2 - 3 Historic Route 66 Stops<br>Tag 4 - Oklahoma City Adventure<br>Tag 5-6 Amarillo Plains<br>Tag 7 - 8 Santa Fe Desert<br>Tag 9 - 10 Albuquerque Heights<br>Tag 11 - 12 Flagstaff Forests<br>Tag 12 - Grand Canyon Edge<br>Tag 13 - Los Angeles Finale<br>Tag 14 - San Francisco<br>Inklusive Campingausrüstung - Dachzelt, Schlafsäcke, tragbarer Herd, Kühlbox</p>
+                                    <button class="cta-button">Jetzt buchen ab $1.499</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('yellowstone.jpg');"></div>
+                                <div class="card-content">
+                                    <h3>Rocky Mountain Route</h3>
+                                    <p class="summary-text">Eine 7-tägige Tour durch die majestätischen Rocky Mountains, vorbei an atemberaubenden Gipfeln, Nationalparks und Wildtieren.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>Rocky Mountain Route</h3>
+                                    <p>Tag 1 - Colorado Rockies Basecamp<br>Tag 2 - 3 Utah’s Red Canyon Trails<br>Tag 4 - Wyoming Wilderness Outpost<br>Tag 5-6 Yellowstone Adventure Hub<br>Tag 7 - Jackson Hole / Return<br>Inklusive Campingausrüstung - Dachzelt, Schlafsäcke, tragbarer Herd, Kühlbox</p>
+                                    <button class="cta-button">Jetzt buchen ab $1.199</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('coastal-route-tesla.jpg');"></div>
+                                <div class="card-content">
+                                    <h3>Pacific Coast Highway</h3>
+                                    <p class="summary-text">Fahren Sie den legendären Pacific Coast Highway von Los Angeles nach San Francisco und erleben Sie dramatische Küstenlandschaften und charmante Küstenstädte.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>Pacific Coast Highway</h3>
+                                    <p>Tag 1 - Los Angeles Start<br>Tag 2 - 3 Santa Monica Shores<br>Tag 4 - Santa Barbara Cliffs<br>Tag 5 - Big Sur Wilderness<br>Tag 6 - 7 Monterey Bay<br>Tag 8 - 9 Carmel-by-the-Sea<br>Tag 10 - San Francisco Finish<br>Inklusive Campingausrüstung - Dachzelt, Schlafsäcke, tragbarer Herd, Kühlbox</p>
+                                    <button class="cta-button">Jetzt buchen ab $999</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('collageroadtrip..jpg');"></div>
+                                <div class="card-content">
+                                    <h3>Southwest Adventure</h3>
+                                    <p class="summary-text">Ein umfassender Roadtrip durch die ikonischsten Landschaften des Südwestens, von den roten Felsen Arizonas bis zu den einzigartigen Wüstenlandschaften Kaliforniens.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>Southwest Adventure</h3>
+                                    <p>Tag 1 - Phoenix Desert Base<br>Tag 2 - 3 Sedona Red Rocks<br>Tag 4 - Grand Canyon South Rim<br>Tag 5-6 Las Vegas Oasis<br>Tag 7 - 8 Zion National Park<br>Tag 9 - 10 Bryce Canyon Trails<br>Tag 11 - 12 Monument Valley<br>Tag 13 - 14 Joshua Tree Escape<br>Inklusive Campingausrüstung - Dachzelt, Schlafsäcke, tragbarer Herd, Kühlbox</p>
+                                    <button class="cta-button">Jetzt buchen ab $1.299</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-image" style="background-image: url('redteslasandiego.jpg');"></div>
+                                <div class="card-content">
+                                    <h3>San Diego Coastal Escape</h3>
+                                    <p class="summary-text">Ein entspannter, 5-tägiger Roadtrip, um die sonnige Küste und die lebendigen Stadtteile von San Diego zu erkunden.</p>
+                                    <p class="flip-text">Details anzeigen ➔</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-back-content">
+                                    <h3>San Diego Küsten-Abenteuer</h3>
+                                    <p>Erlebe San Diegos sonnige Küste. Diese 5-tägige Tour führt dich zu den schönsten Orten: Gaslamp Quarter, La Jolla Shores, Balboa Park und Coronado Island. Inklusive Campingausrüstung.</p>
+                                    <button class="cta-button">Jetzt buchen ab $799</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">Was unsere Kunden sagen</h2>
+                <p class="section-subtitle">Erlebnisse von Abenteurern wie dir</p>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>Wir sind große Fans von Nachhaltigkeit und Effizienz. Dieses E-Auto hat unseren Roadtrip unglaublich erschwinglich und unkompliziert gemacht!</p>
+                            <img src="tesla_red_client.jpg" alt="Happy Customer Remo M." class="testimonial-image">
+                            <cite>Remo M., Schweiz</cite>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>Mit dem Cybertruck ein Roadtrip durch Amerika zu machen, war ein einzigartiges Abenteuer. Wir fühlten uns bereit für jedes Terrain!</p>
+                            <img src="cybertruckreview.jpg" alt="Happy Customer with Cybertruck" class="testimonial-image">
+                            <cite>Remo M. und seine Frau, Schweiz</cite>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>Amazing trip along the Pacific Coast Highway! The Tesla was perfect.</p>
+                            <img src="anna_testamony.jpg" alt="Pacific Coast Highway" class="testimonial-image">
+                            <cite>Anna S., Germany</cite>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>Loved the Grand Circle route, so eco-friendly!</p>
+                            <img src="zion-campsite-tesla.jpg" alt="Grand Circle Route" class="testimonial-image">
+                            <cite>Markus K., Austria</cite>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="why-us">
+            <div class="container">
+                <h2 class="section-title">Warum uns?</h2>
+                <div class="section-content">
+                    <p>
+                        Wir sind angetrieben von unserer Leidenschaft für **nachhaltiges Reisen** und unvergessliche Erlebnisse in der atemberaubenden Natur Amerikas. Unser Team, bestehend aus erfahrenen **Eco-Tourismus-Experten**, hat es sich zur Aufgabe gemacht, Ihnen die Schönheit der USA auf eine **umweltfreundliche** Art und Weise näherzubringen. Mit unserer Flotte von **Elektrofahrzeugen** minimieren Sie Ihren ökologischen Fußabdruck, ohne auf Komfort oder Abenteuer verzichten zu müssen. Wir glauben, dass jeder Roadtrip einen positiven Einfluss auf die Umwelt haben kann.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="karriere" id="karriere">
+            <div class="container">
+                <h2 class="section-title">Karriere</h2>
+                <p class="section-subtitle">Einmalige Praktika für Studenten in den USA</p>
+                <div class="section-content">
+                    <p>
+                        Träumen Sie davon, ein unvergessliches Praktikum zu erleben, das weit über den Schreibtisch hinausgeht? Wir bieten Studenten aus aller Welt die einmalige Chance, Teil unseres Teams in Amerika zu werden. Egal, ob Sie Tourismus, Marketing oder Fahrzeugmanagement studieren – bei uns erhalten Sie praxisnahe Einblicke und lernen die USA auf eine Art kennen, wie es nur wenige tun. Erleben Sie die berühmten Nationalparks, Küstenstraßen und Metropolen, während Sie wertvolle Berufserfahrung sammeln.
+                    </p>
+                    <a href="#buchung" class="cta-button">Jetzt bewerben</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="newsletter" id="buchung">
+            <div class="container">
+                <h2 class="section-title">Buchungsanfrage</h2>
+                <p class="section-subtitle">Starten Sie Ihr E-Auto Abenteuer in den USA</p>
+                <form class="booking-form" action="process-form.php" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vorname</label>
+                            <input type="text" class="form-input" placeholder="Ihr Vorname" required name="Vorname">
+                        </div>
+                        <div class="form-group">
+                            <label>Nachname</label>
+                            <input type="text" class="form-input" placeholder="Ihr Nachname" required name="Nachname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-Mail Adresse</label>
+                        <input type="email" class="form-input" placeholder="ihre@email.de" required name="E-Mail">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gewünschte Route</label>
+                            <select class="form-input" required name="Gewuenschte_Route">
+                                <option value="">Route auswählen</option>
+                                <option>Conquering the Grand Circle: A 7-Day Southwest Road Trip</option>
+                                <option>The Ultimate Route 66 Revival: From Sunsets to the Skyline</option>
+                                <option>Rocky Mountain Route</option>
+                                <option>Pacific Coast Highway</option>
+                                <option>Southwest Adventure</option>
+                                <option>San Diego Coastal Escape</option>
+                                <option>Individuelle Route</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Reisedauer</label>
+                            <select class="form-input" required name="Reisedauer">
+                                <option value="">Dauer auswählen</option>
+                                <option>1 Woche</option>
+                                <option>10 Tage</option>
+                                <option>2 Wochen</option>
+                                <option>3 Wochen</option>
+                                <option>1 Monat</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Zusätzliche Wünsche</label>
+                        <textarea class="form-input" rows="4" placeholder="Besondere Wünsche, bevorzugte Fahrzeuge, Reisezeit..." name="Zusaetzliche_Wuensche"></textarea>
+                    </div>
+                    <button type="submit" class="cta-button">Unverbindliche Anfrage senden</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="kontakt" class="kontakt">
+            <div class="container">
+                <h2 class="section-title">Kontakt</h2>
+                <p class="section-subtitle">Nehmen Sie Kontakt auf, wir freuen uns auf Ihre Nachricht!</p>
+                <div class="kontakt-content">
+                    <div class="kontakt-form">
+                        <h3>Wir beraten und helfen gerne!</h3>
+                        <form action="process-form.php" method="POST">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Ihr vollständiger Name">
+
+                            <label for="email">E-Mail</label>
+                            <input type="email" id="email" name="email" required placeholder="Ihre E-Mail-Adresse">
+
+                            <label for="message">Nachricht</label>
+                            <textarea id="message" name="Nachricht" required placeholder="Ihre Nachricht an uns..."></textarea>
+
+                            <button type="submit" class="cta-button">Senden</button>
+                        </form>
+                    </div>
+                    <div class="kontakt-info">
+                        <h3>Unsere Kontaktdaten</h3>
+                        <p>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>
+                                Abenteuer Mieten Amerika LLC<br>
+                                6445 S Tenaya Way, Suite 110<br>
+                                Las Vegas, USA
+                            </span>
+                        </p>
+                        <p>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>+1 (323) 917-7708 </span>
+                        </p>
+                        <p>
+                            <i class="fas fa-envelope"></i>
+                            <span>info@abenteuermietenamerika.de</span>
+                        </p>
+                        <p>
+                            <i class="fas fa-clock"></i>
+                            <span>
+                                Mo. - Fr.: 9:00 - 18:00 Uhr
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <p><a href="#kontakt">FAQ</a></p>
+                    <p><a href="#kontakt">Support</a></p>
+                    <p><a href="#kontakt">Routenplanung</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Unternehmen</h4>
+                    <p><a href="#">Über uns</a></p>
+                    <p><a href="#karriere">Karriere</a></p>
+                    <p><a href="#nachhaltigkeit">Nachhaltigkeit</a></p>
+                </div>
+            </div>
+            <p style="color: #666; padding-top: 2rem; border-top: 1px solid #222;">&copy; 2025 Abenteuer Mieten Amerika. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect and dynamic resizing
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
