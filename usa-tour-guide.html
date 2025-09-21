@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA Virtual Tour Guide</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #f3e8ff 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .credits-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #dcfce7;
+            padding: 8px 16px;
+            border-radius: 25px;
+            color: #166534;
+            font-weight: 500;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        .category-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            background: #f9fafb;
+            color: #374151;
+        }
+
+        .category-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .buy-credits-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .buy-credits-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .location-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .main-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .audio-btn {
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .audio-btn:hover {
+            background: #c7d2fe;
+        }
+
+        .audio-btn.muted {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+
+        .location-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .card-emoji {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .card-location {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #fef3c7;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .rating-star {
+            color: #f59e0b;
+            width: 16px;
+            height: 16px;
+        }
+
+        .rating-text {
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-description {
+            color: #374151;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .directions-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .directions-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .tour-guide-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .tour-guide-btn:hover {
+            background: #059669;
+        }
+
+        .tour-guide-btn:disabled {
+            background: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            padding: 8px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .pricing-card.popular {
+            border-color: #2563eb;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2563eb;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .pricing-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 16px;
+        }
+
+        .pricing-credits {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .purchase-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .purchase-btn.popular {
+            background: #2563eb;
+            color: white;
+        }
+
+        .purchase-btn.popular:hover {
+            background: #1d4ed8;
+        }
+
+        .purchase-btn:not(.popular) {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .purchase-btn:not(.popular):hover {
+            background: #e5e7eb;
+        }
+
+        .modal-footer {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .playing {
+            background: #fca5a5 !important;
+            color: #991b1b !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 16px;
+            }
+            
+            .header-content {
+                padding: 0 16px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-feather="map-pin"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>USA Tour Guide</h1>
+                    <p>Virtual Travel Assistant</p>
+                </div>
+            </div>
+            <div class="credits-display">
+                <i data-feather="credit-card"></i>
+                <span id="credits-count">8 credits</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Explore Categories</h2>
+            <div class="categories">
+                <button class="category-btn active" data-category="attractions">
+                    <i data-feather="star"></i>
+                    <span>Attractions</span>
+                </button>
+                <button class="category-btn" data-category="hotels">
+                    <i data-feather="building"></i>
+                    <span>Hotels</span>
+                </button>
+                <button class="category-btn" data-category="camping">
+                    <i data-feather="tree-pine"></i>
+                    <span>Camping</span>
+                </button>
+                <button class="category-btn" data-category="charging">
+                    <i data-feather="zap"></i>
+                    <span>Charging Stations</span>
+                </button>
+                <button class="category-btn" data-category="routes">
+                    <i data-feather="navigation"></i>
+                    <span>Routes</span>
+                </button>
+            </div>
+            
+            <button class="buy-credits-btn" onclick="showPaymentModal()">
+                <i data-feather="credit-card"></i>
+                Buy More Credits
+            </button>
+            
+            <div class="location-section">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Current Location</h3>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i data-feather="map-pin" style="color: #ef4444; width: 20px; height: 20px;"></i>
+                    <span style="color: #374151;">New York, NY</span>
+                </div>
+                <button style="margin-top: 12px; color: #2563eb; background: none; border: none; font-size: 14px; font-weight: 500; cursor: pointer;">
+                    Change Location
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title" id="category-title">Attractions</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="mute-btn" onclick="toggleMute()">
+                        <i data-feather="volume-2"></i>
+                    </button>
+                    <button class="audio-btn playing hidden" id="stop-btn" onclick="stopTourGuide()">
+                        <i data-feather="pause"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="cards-grid" id="cards-container">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal hidden" id="payment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Purchase Credits</h2>
+                <button class="close-btn" onclick="hidePaymentModal()">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Starter Pack</h3>
+                    <div class="pricing-price">$9.99</div>
+                    <div class="pricing-credits">25 credits</div>
+                    <button class="purchase-btn" onclick="purchaseCredits(25, 9.99)">Purchase Now</button>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3 class="pricing-name">Explorer Pack</h3>
+                    <div class="pricing-price">$19.99</div>
+                    <div class="pricing-credits">60 credits</div>
+                    <button class="purchase-btn popular" onclick="purchaseCredits(60, 19.99)">Purchase Now</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Adventure Pack</h3>
+                    <div class="pricing-price">$34.99</div>
+                    <div class="pricing-credits">120 credits</div>
+                    <button class="purchase-btn" onclick="purchaseCredits(120, 34.99)">Purchase Now</button>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <p>💳 Secure payment powered by Stripe</p>
+                <p style="margin-top: 4px;">✨ Credits never expire and work anywhere in the USA</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Global state
+        let credits = 8;
+        let currentCategory = 'attractions';
+        let isMuted = false;
+        let isPlaying = false;
+
+        // Sample data
+        const data = {
+            attractions: [
+                { id: 1, name: 'Statue of Liberty', location: 'New York, NY', rating: 4.8, description: 'Iconic symbol of freedom and democracy', emoji: '🗽', price: 'Free', distance: '2.1 miles' },
+                { id: 2, name: 'Central Park', location: 'New York, NY', rating: 4.7, description: 'Beautiful urban park in Manhattan', emoji: '🌳', price: 'Free', distance: '1.5 miles' },
+                { id: 3, name: 'Times Square', location: 'New York, NY', rating: 4.5, description: 'Bright lights and Broadway shows', emoji: '🌟', price: 'Free', distance: '0.8 miles' }
+            ],
+            hotels: [
+                { id: 1, name: 'The Plaza Hotel', location: 'New York, NY', rating: 4.9, description: 'Luxury hotel in Midtown Manhattan', emoji: '🏨', price: '$450/night', distance: '1.2 miles' },
+                { id: 2, name: 'Pod Hotels', location: 'New York, NY', rating: 4.3, description: 'Modern boutique hotel', emoji: '🏨', price: '$180/night', distance: '0.9 miles' }
+            ],
+            camping: [
+                { id: 1, name: 'Liberty Harbor RV Park', location: 'Jersey City, NJ', rating: 4.4, description: 'RV park with NYC skyline views', emoji: '🏕️', price: '$85/night', distance: '3.4 miles' },
+                { id: 2, name: 'Floyd Bennett Field', location: 'Brooklyn, NY', rating: 4.2, description: 'Urban camping experience', emoji: '⛺', price: '$40/night', distance: '12.8 miles' }
+            ],
+            charging: [
+                { id: 1, name: 'Tesla Supercharger', location: 'Manhattan West', rating: 4.6, description: 'Fast charging station', emoji: '⚡', price: '$0.28/kWh', distance: '1.1 miles' },
+                { id: 2, name: 'ChargePoint Station', location: 'Times Square', rating: 4.4, description: 'Level 2 charging', emoji: '🔌', price: '$0.35/kWh', distance: '0.8 miles' }
+            ],
+            routes: [
+                { id: 1, name: 'NYC to Niagara Falls', location: 'New York to Buffalo', rating: 4.7, description: 'Scenic route through upstate NY', emoji: '🛣️', price: '2 credits', distance: '292 miles' },
+                { id: 2, name: 'Manhattan Loop Tour', location: 'New York, NY', rating: 4.8, description: 'Complete Manhattan sightseeing route', emoji: '🗺️', price: '1 credit', distance: '25 miles' }
+            ]
+        };
+
+        // Tour guide narrations
+        const narrations = {
+            'Statue of Liberty': "Welcome to the Statue of Liberty! This magnificent copper statue was a gift from France in 1886. Standing at 305 feet tall, Lady Liberty has welcomed millions of immigrants to America. The seven spikes on her crown represent the seven seas and seven continents.",
+            'Central Park': "You're now at Central Park, Manhattan's green oasis! Designed by Frederick Law Olmsted and Calvert Vaux in 1857, this 843-acre park features lakes, walking paths, and the famous Bethesda Fountain. Over 42 million people visit each year!",
+            'Times Square': "This is Times Square, the crossroads of the world! Known for its bright billboards and Broadway theaters, it attracts over 50 million visitors annually. The famous New Year's Eve Ball Drop happens right here every December 31st."
+        };
+
+        // Update credits display
+        function updateCreditsDisplay() {
+            document.getElementById('credits-count').textContent = `${credits} credits`;
+        }
+
+        // Category switching
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                document.getElementById('category-title').textContent = btn.textContent.trim();
+                renderCards();
+            });
+        });
+
+        // Render cards for current category
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            const items = data[currentCategory] || [];
+            
+            container.innerHTML = items.map(item => `
+                <div class="location-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-emoji">${item.emoji}</div>
+                            <h3 class="card-title">${item.name}</h3>
+                            <p class="card-location">${item.location}</p>
+                        </div>
+                        <div class="rating">
+                            <i data-feather="star" class="rating-star"></i>
+                            <span class="rating-text">${item.rating}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="card-description">${item.description}</p>
+                    
+                    <div class="card-details">
+                        <div>💰 ${item.price}</div>
+                        <div>📍 ${item.distance}</div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <button class="action-btn directions-btn">
+                            <i data-feather="navigation"></i>
+                            Get Directions
+                        </button>
+                        ${narrations[item.name] ? `
+                            <button class="action-btn tour-guide-btn" onclick="playTourGuide('${item.name}')" ${credits <= 0 || isPlaying ? 'disabled' : ''}>
+                                <i data-feather="play"></i>
+                                Tour Guide
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            feather.replace();
+        }
+
+        // Tour guide functionality
+        function playTourGuide(attractionName) {
+            if (credits <= 0) {
+                showPaymentModal();
+                return;
+            }
+            
+            const narration = narrations[attractionName];
+            if (narration && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(narration);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = isMuted ? 0 : 1;
+                
+                speechSynthesis.speak(utterance);
+                credits -= 1;
+                updateCreditsDisplay();
+                isPlaying = true;
+                
+                document.getElementById('stop-btn').classList.remove('hidden');
+                document.querySelectorAll('.tour-guide-btn').forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('playing');
+                });
+                
+                utterance.onend = () => {
+                    isPlaying = false;
+                    document.getElementById('stop-btn').classList.add('hidden');
+                    document.querySelectorAll('.tour-guide-btn').forEach(btn => {
+                        btn.disabled = credits <= 0;
+                        btn.classList.remove('playing');
+                    });
+                };
+            }
+        }
+
+        function stopTourGuide() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                isPlaying = false;
+                document.getElementById('stop-btn').classList.add('hidden');
+                document.querySelectorAll('.tour-guide-btn').forEach(btn => {
+                    btn.disabled = credits <= 0;
+                    btn.classList.remove('playing');
+                });
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('mute-btn');
+            btn.innerHTML = isMuted ? '<i data-feather="volume-x"></i>' : '<i data-feather="volume-2"></i>';
+            btn.classList.toggle('muted', isMuted);
+            feather.replace();
+        }
+
+        // Payment modal functions
+        function showPaymentModal() {
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function hidePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        function purchaseCredits(amount, price) {
+            // Simulate payment processing
+            setTimeout(() => {
+                credits += amount;
+                updateCreditsDisplay();
+                hidePaymentModal();
+                alert(`Successfully purchased ${amount} credits for $${price}!`);
+                renderCards(); // Re-render to update button states
+            }, 1000);
+        }
+
+        // Initialize the app
+        renderCards();
+        updateCreditsDisplay();
+
+        // Close modal when clicking outside
+        document.getElementById('payment-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'payment-modal') {
+                hidePaymentModal();
+            }
+        });
+    </script>
+</body>
+</html>
